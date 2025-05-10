@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Properties>
+        <Property name="hIpAddress">${sys:hostAddress}</Property>
+        <Property name="hName">${hostName}</Property>
+
+    </Properties>
+    <Appenders>
+
+        <Socket name="Logstash" host="localhost" port="5000" protocol="TCP">
+            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json">
+                <EventTemplateAdditionalField
+                        key="HostName"
+                        value="${hName}"/>
+                <EventTemplateAdditionalField
+                        key="HostAddress"
+                        value="${hIpAddress}"/>
+            </JsonTemplateLayout>
+        </Socket>
+
+        <File name="InfoLog" fileName="./logs/Info.log">
+            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json">
+            </JsonTemplateLayout>
+        </File>
+        <File name="AlertLog" fileName="./logs/Alert.log">
+            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json">
+            </JsonTemplateLayout>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Logstash"/>
+            <AppenderRef ref="InfoLog" level="info"/>
+            <AppenderRef ref="AlertLog" level="warn"/>
+        </Root>
+    </Loggers>
+</Configuration>
